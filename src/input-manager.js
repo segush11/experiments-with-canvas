@@ -38,37 +38,38 @@ export class InputManager {
     });
   };
 
-  _onMouseDown = (event) => {
+  _getMousePosition = (event) => {
     const boundingBox = canvas.getBoundingClientRect();
 
+    return {
+      x: event.x - boundingBox.left,
+      y: event.y - boundingBox.top
+    };
+  };
+
+  _onMouseDown = (event) => {
     this._receiveEvent(InputEvents.MOUSE_DOWN, {
       button: event.button,
-      positon: [event.x - boundingBox.left, event.x - boundingBox.top]
+      positon: this._getMousePosition(event)
     });
 
     canvas.addEventListener("mousemove", this._onMouseMove);
-    canvas.addEventListener("mouseup", this.onMouseUp);
+    canvas.addEventListener("mouseup", this._onMouseUp);
   };
 
   _onMouseUp = (event) => {
-    const boundingBox = canvas.getBoundingClientRect();
-
     this._receiveEvent(InputEvents.MOUSE_UP, {
       button: event.button,
-      positon: [event.x - boundingBox.left, event.x - boundingBox.top]
+      positon: this._getMousePosition(event)
     });
-
-    console.log(this.lastEvent);
 
     canvas.removeEventListener("mousemove", this._onMouseMove);
     canvas.removeEventListener("mouseup", this._onMouseUp);
   };
 
   _onMouseMove = (event) => {
-    const boundingBox = canvas.getBoundingClientRect();
-
     this._receiveEvent(InputEvents.MOUSE_MOVE, {
-      positon: [event.x - boundingBox.left, event.x - boundingBox.top]
+      positon: this._getMousePosition(event)
     });
   };
 
@@ -86,10 +87,7 @@ export class InputManager {
         InputEvents.MOUSE_DOWN,
         InputEvents.MOUSE_UP,
         InputEvents.MOUSE_MOVE
-      ].includes(this.lastEvent.type) && {
-        x: this.lastEvent.payload.positon[0],
-        y: this.lastEvent.payload.positon[1]
-      }
+      ].includes(this.lastEvent.type) && this.lastEvent.payload.positon
     );
   }
 

@@ -2,39 +2,46 @@ import { canvas, canvasContext } from "./globals";
 import { InputManager } from "./input-manager";
 
 class Shape {
-  constructor(x, y) {
+  constructor(x, y, color) {
     this.x = x;
     this.y = y;
     this.width = 20;
     this.height = 20;
-    this.color = "magenta";
+    this.color = color;
   }
 
   draw() {
     canvasContext.fillStyle = this.color;
-    canvasContext.fillRect(
-      this.x - this.width / 2,
-      this.y - this.height / 2,
-      20,
-      20
-    );
+    canvasContext.fillRect(this.x - 10, this.y - 10, 20, 20);
   }
 }
 
 (function () {
   const manager = new InputManager();
-  let shape = null;
+  let start = null;
+  let end = null;
+
+  let shape1 = null;
+  let shape2 = null;
   let mousePosition = null;
 
   function update() {
     if (manager.isMouseButtonPressed(0)) {
       mousePosition = manager.mousePosition;
-      console.log(mousePosition);
-      shape = new Shape(mousePosition.x, mousePosition.y);
+
+      end = null;
+      start = mousePosition;
+
+      shape2 = null;
+      shape1 = new Shape(mousePosition.x, mousePosition.y, "red");
     }
 
     if (manager.isMouseButtonReleased(0)) {
-      shape = null;
+      mousePosition = manager.mousePosition;
+
+      end = mousePosition;
+
+      shape2 = new Shape(mousePosition.x, mousePosition.y, "green");
     }
 
     manager.update();
@@ -44,8 +51,14 @@ class Shape {
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     canvasContext.setTransform(1, 0, 0, 1, 0, 0);
 
-    if (null !== shape) {
-      shape.draw();
+    if (null !== shape1) shape1.draw();
+    if (null !== shape2) shape2.draw();
+
+    if (null !== start && null !== end) {
+      canvasContext.beginPath();
+      canvasContext.moveTo(start.x, start.y);
+      canvasContext.lineTo(end.x, end.y);
+      canvasContext.stroke();
     }
   }
 
