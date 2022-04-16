@@ -24,6 +24,7 @@ class Shape {
   let shape1 = null;
   let shape2 = null;
   let mousePosition = null;
+  let currentPosition = null;
 
   function update() {
     if (manager.isMouseButtonPressed(0)) {
@@ -34,6 +35,10 @@ class Shape {
 
       shape2 = null;
       shape1 = new Shape(mousePosition.x, mousePosition.y, "red");
+    }
+
+    if (null !== start) {
+      currentPosition = manager.mousePosition;
     }
 
     if (manager.isMouseButtonReleased(0)) {
@@ -54,10 +59,17 @@ class Shape {
     if (null !== shape1) shape1.draw();
     if (null !== shape2) shape2.draw();
 
-    if (null !== start && null !== end) {
+    if (null !== start) {
+      let to =
+        null !== end
+          ? end
+          : null !== currentPosition
+          ? currentPosition
+          : { x: 0, y: 0 };
+
       canvasContext.beginPath();
       canvasContext.moveTo(start.x, start.y);
-      canvasContext.lineTo(end.x, end.y);
+      canvasContext.lineTo(to.x, to.y);
       canvasContext.stroke();
     }
   }
