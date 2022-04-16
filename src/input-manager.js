@@ -104,6 +104,10 @@ export class InputManager {
     );
   }
 
+  isMouseMoving() {
+    return InputEvents.MOUSE_MOVE === this.lastEvent.type;
+  }
+
   isKeyPressed(button) {
     return (
       InputEvents.KEY_DOWN === this.lastEvent.type &&
